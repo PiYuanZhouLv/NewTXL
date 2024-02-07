@@ -1,0 +1,13 @@
+class Inner:
+    def __init__(self, cmd=[]) -> None:
+        print('Inner at', hex(id(self)), 'is created, now refers to', cmd)
+        self.cmd = cmd
+    def __getitem__(self, item):
+        print('Inner at', hex(id(self)), 'get', item)
+        return type(self)(self.cmd+[item])
+    def __setitem__(self, item, value):
+        print('Inner at', hex(id(self)), 'set', item, 'as', value)
+        print('now I know your command is: Inner()'+''.join([f'[{repr(i)}]' for i in self.cmd+[item]])+' =', repr(value))
+
+print('Now eval "Inner()[\'setting\'][\'page1\'] = \'123\'"')
+Inner()['setting']['page1'] = '123'
