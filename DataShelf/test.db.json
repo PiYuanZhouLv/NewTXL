@@ -1,1 +1,1 @@
-{"info": {"newid": 2, "savetime": "2024-02-04 21:09:22"}, "shelf": {"0": {"title": "hello world"}, "1": {"title": "hello pi", "test": {"nest": {"last": "just test!"}}}}}
+{"info": {"newid": 4, "savetime": "2024-02-07 18:24:09"}, "shelf": {"0": {"title": "hello world", "user": "pi"}, "1": {"title": "hello pi", "test": {"nest": {"last": "just test!"}}}, "2": {}, "3": {"title": "hi world"}}}

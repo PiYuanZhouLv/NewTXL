@@ -18,7 +18,7 @@ class client:
             def __getitem__(self, item):
                 return type(self)(self.cmd+[item])
             def __setitem__(self, item, value):
-                cls.sock.send(json.dumps(["set", name, self.cmd+[item], value]).encode())
+                cls.sock.send(json.dumps(["set", name, self.cmd+[item], json.dumps(value)]).encode())
                 cls.sock.recv(1024)
         return Inner()
 
@@ -26,5 +26,7 @@ class client:
         self.sock.send(json.dumps(["search",page]).encode())   
         return json.loads(self.sock.recv(1024).decode())
 
-
+    def close(self):
+        self.sock.send(b'["close"]')
+        self.sock.close()
 

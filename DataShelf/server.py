@@ -65,13 +65,13 @@ class DataShelf:
             if n not in i:
                 i[n] = {}
             i = i[n]
-        i[command[1][-1]] = command[2]
+        i[command[1][-1]] = json.loads(command[2])
         self.save()
         return 'OK'
     def get(self, command):
         return json.dumps(self.shelf['shelf'][str(command[0])])
     def search(self, command):
-        titles = {k: v['title'] for k, v in self.shelf['shelf'].items()}
+        titles = {k: v['title'] for k, v in self.shelf['shelf'].items() if 'title' in v}
         return json.dumps(process.extract(command[0], titles, limit=10))
     def accept(self):
         def deal(sock: socket.socket, server: DataShelf):
@@ -124,7 +124,7 @@ class DataShelf:
                         r = self.get(cmd[1:])
                     case "set":
                         r = self.set(cmd[1:])
-                    case "search for name":
+                    case "search":
                         r = self.search(cmd[1:])
                     case "new":
                         r = self.new()
