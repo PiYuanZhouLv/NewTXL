@@ -1,3 +1,4 @@
+from LengthVariableTCP import LengthVariableTCP as LVTCP
 import socket
 import json
 import time
@@ -78,14 +79,15 @@ class DataShelf:
             q = queue.Queue()
             sock.setblocking(True)
             sock.settimeout(10)
+            lvtcp = LVTCP(sock)
             while not server.shutdown:
                 try:
-                    cmd = json.loads(sock.recv(1024).decode())
+                    cmd = json.loads(lvtcp.recv(1024).decode())
                 except socket.timeout:
                     continue
                 except json.JSONDecodeError:
                     try:
-                        sock.send(b'CommandSyntexError')
+                        lvtcp.send(b'CommandSyntexError')
                     except OSError:
                         return
                     else:
@@ -97,7 +99,7 @@ class DataShelf:
                 else:
                     server.queue.put((cmd, q))
                     result = q.get()
-                    sock.send(result.encode())
+                    lvtcp.send(result.encode())
         while not self.shutdown:
             try:
                 client_socket, client_address = self.sock.accept()
