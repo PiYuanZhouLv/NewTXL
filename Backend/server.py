@@ -1,7 +1,12 @@
 from flask import Flask
 import os
+from frontInterface import bp as interfacebp
+from album import bp as albumbp
 
 app = Flask(__name__, static_folder='resources')
+
+app.register_blueprint(interfacebp)
+app.register_blueprint(albumbp)
 
 @app.route('/')
 @app.route("/<path:path>")

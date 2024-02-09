@@ -3,6 +3,8 @@
     <head>
         <title>同学录 - 新建同学录</title>
         <link rel="stylesheet" href="https://cdn.simplecss.org/simple.min.css">
+        <script src="/jquery-3.7.1.min.js"></script>
+        <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
         <!-- <meta http-equiv="refresh" content="1"> -->
     </head>
     <body>
@@ -16,8 +18,9 @@
                 <span>邀请码</span><input name="invite-code" placeholder="请输入邀请码">
                 <span>同学录标题</span><input name="title" placeholder="请输入标题">
                 <span>管理员账号</span><input value="admin" disabled>
-                <span>管理员密码</span><input name="password" placeholder="请输入管理员密码">
-                <strong style="grid-column: 1/3; color: red;">请注意：管理员密码不可修改，请妥善保管！</strong>
+                <span>管理员密码</span><input name="password" type="password" placeholder="请输入管理员密码">
+                <span>确认密码</span><input name="confirm" type="password" placeholder="请再次输入管理员密码">
+                <strong style="grid-column: 1/3; color: red;">请注意：管理员密码不可修改、无法找回，请妥善保管！</strong>
                 <button style="grid-column: 1/3;" onclick="create()">创建</button>
             </div>
             <style>
@@ -27,7 +30,41 @@
             </style>
             <script>
                 function create(){
-                    
+                    if($("input[name=password]").val() !== $("input[name=confirm]").val()){
+                        swal('创建失败', '两次输入的管理员密码不一致', 'error')
+                        return
+                    }
+                    if(!$("input[name=title]").val()){
+                        swal('创建失败', '请输入标题', 'error')
+                        .then((value=>{$('input[name=title]').focus()}))
+                        return
+                    }
+                    $.post(
+                        '/api/new',
+                        {
+                            'invite code': $("input[name=invite-code]").val(),
+                            'title': $('input[name=title]').val(),
+                            'password': $('input[name=password]').val()
+                        },
+                        (data, info, jqxhr) => {
+                            switch(data["type"]){
+                                case "success":
+                                    swal('创建成功', `成功创建了同学录:${$("input[name=title]").val()}
+                                    请记住：
+                                    管理员账号：admin
+                                    管理员密码：${$('input[name=password]').val()}
+                                    点击确定跳转管理员面板`, 'success', {button:"确定"})
+                                    .then((value)=>{location.href = `/album/${data["nid"]}`})
+                                    break
+                                case "invite code invalid":
+                                    swal('创建失败', '邀请码无效', 'error')
+                                    .then((value)=>{
+                                        $("input[name=invite-code]").focus()
+                                    })
+                                    break
+                            }
+                        }
+                    )
                 }
             </script>
         </main>
