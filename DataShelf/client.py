@@ -1,8 +1,11 @@
 import socket
 import json
-from LengthVariableTCP import LengthVariableTCP as LVTCP
+try:
+    from LengthVariableTCP import LengthVariableTCP as LVTCP
+except ModuleNotFoundError:
+    from .LengthVariableTCP import LengthVariableTCP as LVTCP
 
-class client:
+class Client:
     def __init__(self,address):
         self.sock = socket.socket(socket.AF_INET)
         self.sock.connect(address)

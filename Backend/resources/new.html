@@ -3,7 +3,7 @@
     <head>
         <title>同学录 - 新建同学录</title>
         <link rel="stylesheet" href="https://cdn.simplecss.org/simple.min.css">
-        <meta http-equiv="refresh" content="1">
+        <!-- <meta http-equiv="refresh" content="1"> -->
     </head>
     <body>
         <header style="display: grid; grid-template-columns: 1fr 5fr 1fr;">
@@ -11,5 +11,25 @@
             <p style="display: inline; font-size: 30px; font-weight: bold;">新建同学录</p>
             <div></div>
         </header>
+        <main>
+            <div id="form" style="display: grid; grid-template-columns: 1fr 5fr; align-items: baseline;">
+                <span>邀请码</span><input name="invite-code" placeholder="请输入邀请码">
+                <span>同学录标题</span><input name="title" placeholder="请输入标题">
+                <span>管理员账号</span><input value="admin" disabled>
+                <span>管理员密码</span><input name="password" placeholder="请输入管理员密码">
+                <strong style="grid-column: 1/3; color: red;">请注意：管理员密码不可修改，请妥善保管！</strong>
+                <button style="grid-column: 1/3;" onclick="create()">创建</button>
+            </div>
+            <style>
+                #form > span{
+                    text-align: center;
+                }
+            </style>
+            <script>
+                function create(){
+                    
+                }
+            </script>
+        </main>
     </body>
 </html>
