@@ -10,6 +10,7 @@ class Client:
         self.sock = socket.socket(socket.AF_INET)
         self.sock.connect(address)
         self.lvtcp = LVTCP(self.sock)
+        self.closed = False
     def new(self):
         self.lvtcp.send(json.dumps(['NEW']).encode())
         return int(self.lvtcp.recv(1024))
@@ -32,6 +33,14 @@ class Client:
         return json.loads(self.lvtcp.recv(1024).decode())
 
     def close(self):
-        self.lvtcp.send(b'["close"]')
-        self.sock.close()
+        if not self.closed:
+            self.lvtcp.send(b'["close"]')
+            self.sock.close()
+            self.closed = True
 
+    def __del__(self):
+        self.close()
+
+    def check_invite_code(self, iv_code):
+        self.lvtcp.send(json.dumps(["check", iv_code]).encode())
+        return self.lvtcp.recv().decode() == 'Valid'

@@ -1,0 +1,15 @@
+<script src="/jquery-3.7.1.min.js"></script>
+<button onclick="logout()">登出</button>
+<script>
+    function logout(){
+        $.post(
+            '/api/logout',
+            {
+                'AlbumID': location.href.split('/').reverse()[0]
+            },
+            (data, ts, jqxhr) => {
+                location.reload()
+            }
+        )
+    }
+</script>

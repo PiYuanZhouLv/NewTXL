@@ -14,7 +14,7 @@
             <div></div>
             </div>
             <div style="display: grid; grid-template-columns: 5fr 1fr;">
-                <input placeholder="请输入同学录标题">
+                <input id="keyword" placeholder="请输入同学录标题">
                 <button onclick="search()">搜索</button>
             </div>
         </header>
@@ -29,11 +29,15 @@
                 $("main").html("")
                 $.post(
                     '/api/search',
+                    {
+                        'keyword': $("#keyword").val()
+                    },
                     (data, ts, jqxhr) => {
                         data.forEach(element => {
                             $("main").append(
-                                $(`<section style="display: grid; grid-template-columns: 5fr 1fr;">
+                                $(`<section style="display: grid; grid-template-columns: 4fr 1fr 1fr; align-items: baseline;">
                                        <span>${element[0]}</span>
+                                       <span style="color: ${ {"正在收集": "limegreen", "暂停收集": "red", "已发布": "orange"}[element[2]] }; text-align: center">${element[2]}</span>
                                        <a class="button" style="text-align: center;" href="/album/${element[1]}">进入&gt;</a>
                                    </section>`)
                             )

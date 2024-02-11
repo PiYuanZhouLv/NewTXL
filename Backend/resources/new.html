@@ -34,6 +34,10 @@
                         swal('创建失败', '两次输入的管理员密码不一致', 'error')
                         return
                     }
+                    if(!$("input[name=password]").val()){
+                        swal('创建失败', '管理员密码不能为空', 'error')
+                        return
+                    }
                     if(!$("input[name=title]").val()){
                         swal('创建失败', '请输入标题', 'error')
                         .then((value=>{$('input[name=title]').focus()}))

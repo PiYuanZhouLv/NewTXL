@@ -14,7 +14,7 @@ class LengthVariableTCP:
         ba.extend(reversed([length%(256**(i+1))//(256**i) for i in range(white_length+1)]))
         ba.extend(data)
         self.sock.sendall(ba)
-    def recv(self, _):
+    def recv(self, _=None):
         head_left = 0
         while True:
             b = self.sock.recv(1)[0]

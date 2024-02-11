@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>同学录 - 登录同学录</title>
+        <link rel="stylesheet" href="https://cdn.simplecss.org/simple.min.css">
+        <script src="/jquery-3.7.1.min.js"></script>
+        <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+        <!-- <meta http-equiv="refresh" content="1"> -->
+    </head>
+    <body>
+        <header style="display: grid; grid-template-columns: 1fr 5fr 1fr;">
+            <div style="justify-self: center; align-self: center;"><a style="border-width: 1px; color: black; border-color: black; border-style: solid; padding: 8px; border-radius: 5px; text-decoration: none;" href="homepage.html">&lt;返回首页</a></div>
+            <p style="display: inline; font-size: 30px; font-weight: bold;">请登录访问同学录</p>
+            <div></div>
+        </header>
+        <main>
+            <style>
+                .selected {
+                    color: #1da3f7;
+                    border-color: #1da3f7;
+                    border-width: 0;
+                    border-bottom-width: 5px;
+                    border-style: solid;
+                }
+                .unselected {
+                    color: black;
+                    border-color: gray;
+                    border-width: 0;
+                    border-bottom-width: 5px;
+                    border-style: solid;
+                    cursor: pointer;
+                }
+            </style>
+            <p style="display: grid; grid-template-columns: 1fr 1fr; justify-items: center;">
+                <span id="user" class="selected">普通用户登录</span>
+                <span id="admin" class="unselected">管理员登录</span>
+            </p>
+            <div style="display: grid; grid-template-columns: 1fr 5fr; text-align: center;">
+                <span>用户名</span><input name="username" placeholder="请输入管理员分配的用户名">
+                <span>密码</span><input type="password" placeholder="请输入系统分派的密码或重置后的密码">
+                <button style="grid-column: 1/3;" onclick="login()">登录</button>
+            </div>
+            <script>
+                $('#user').click((evt) => {
+                    $('#user').removeClass('unselected').addClass('selected')
+                    $('#admin').removeClass('selected').addClass('unselected')
+                    $('input[name=username]').val('').removeAttr('disabled')
+                })
+                $('#admin').click((evt) => {
+                    $('#admin').removeClass('unselected').addClass('selected')
+                    $('#user').removeClass('selected').addClass('unselected')
+                    $('input[name=username]').val('admin').attr('disabled', 'disabled')
+                })
+                if(new URLSearchParams(location.search).get('login') === "admin"){
+                    $("#admin").click()
+                }
+                function login(){
+                    if(!$('input[name=username]').val()){
+                        swal('登陆失败', '请输入用户名', 'warning').then((value)=>{$('input[name=username]').focus()})
+                        return
+                    }
+                    if(!$('input[type=password]').val()){
+                        swal('登陆失败', '请输入密码', 'warning').then((value)=>{$('input[type=password]').focus()})
+                        return
+                    }
+                    $.post(
+                        '/api/login',
+                        {
+                            'username': $('input[name=username]').val(),
+                            'password': $('input[type=password]').val(),
+                            'AlbumID': new URLSearchParams(location.search).get('AlbumID')
+                        },
+                        (data, ts, jqxhr) => {
+                            if(data['ok']&&data['need_change']){
+                                swal('登录成功', '你已成功地完成了初次登录，请点击确定前往修改密码', 'info')
+                                .then((value)=>{location.href = `/changepassword.html?AlbumID=${new URLSearchParams(location.search).get('AlbumID')}`})
+                            }else if(data['ok']){
+                                location.href = `/album/${new URLSearchParams(location.search).get('AlbumID')}`
+                            }else{
+                                swal('登陆失败', '用户名或密码错误', 'error')
+                            }
+                        }
+                    )
+                }
+            </script>
+        </main>
+    </body>
+</html>
