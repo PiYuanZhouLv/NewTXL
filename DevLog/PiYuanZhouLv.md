@@ -30,3 +30,18 @@
 在开发可能会破坏原有项目的功能时，可以签出分支(左下角“鱼叉”符号-->创建新分支)，
 签出的分支与原分支独立，可以切换，各自进度保留(但要先进行commit)，
 完成后提出pull request，确认无误后就可以merge(合并)了
+
+---
+
+**[2024/2/13 14:45]**
+
+前后端基本粘合，进入核心区开发阶段
+
+我完成了前后端基本的粘合，可以启动服务器查看效果。步骤如下：
+
+0. 在项目根目录下执行`pip install -r requirements.txt`(要安装MSVC环境，不然会报错)
+1. 在项目根目录执行`python "DataShelf/server.py" --path RealWorldTest.db.json`
+2. 在`Backend`文件夹下执行`python server.py`
+3. 用浏览器访问[http://localhost:11451](http://localhost:11451)
+
+P.S. 可以从“搜索同学录”中进入测试用的同学录，管理员密码`114514`，普通用户`Test111`，密码`123`
