@@ -2,6 +2,7 @@ from flask import session, redirect, request
 import json
 from databaseConnection import get_database
 import hashlib
+from functools import wraps
 
 # def before_request():
 #     if not session.get('login'):
@@ -45,6 +46,7 @@ def reset_pwd(nid, username):
 
 def require(level):
     def factory(f):
+        @wraps(f)
         def inner(AlbumID, *args, **kwargs):
             d = json.loads(session.get('login') or "{}")
             if level == "login":
@@ -74,6 +76,7 @@ def require(level):
     return factory
 
 def switch_current(f):
+    @wraps(f)
     def inner(AlbumID, *args, **kwargs):
         d = json.loads(session.get('login') or "{}")
         if str(AlbumID) not in d:

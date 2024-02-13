@@ -1,15 +1,150 @@
-<script src="/jquery-3.7.1.min.js"></script>
-<button onclick="logout()">登出</button>
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>用户仪表盘</title>
+    <style>
+        #logout:hover {
+            color: red !important;
+            border-color: red !important;
+        }
+
+        /* article{
+                border-width: 1px;
+                border-color: black;
+                border-radius: 5px;
+                border-style: solid;
+            } */
+        .must {
+            border-width: 1px;
+            border-color: green;
+            border-style: solid;
+            border-radius: 2px;
+            color: darkgreen;
+            background-color: lightgreen;
+            height: fit-content;
+            justify-self: center;
+        }
+
+        .not-need {
+            border-width: 1px;
+            border-color: orange;
+            border-style: solid;
+            border-radius: 2px;
+            color: orange;
+            background-color: yellow;
+            height: fit-content;
+            justify-self: center;
+        }
+
+        ul>li {
+            display: grid;
+            grid-template-columns: 1fr 9fr 3fr 3fr;
+            column-gap: 5px;
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdn.simplecss.org/simple.min.css">
+    <script src="/jquery-3.7.1.min.js"></script>
+    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+</head>
+
+<body style="display: unset;">
+    <header
+        style="display: grid; grid-template-columns: 1fr 5fr 1fr; box-shadow: 0px 5px 5px #888888; position: absolute;left: 0;top: 0;width: 100%; justify-items: center; padding: 0; --accent-bg: white">
+        <div style="justify-self: center; align-self: center;"><a
+                style="border-width: 1px; color: black; border-color: black; border-style: solid; padding: 8px; border-radius: 5px; text-decoration: none;"
+                href="/">&lt;返回首页</a></div>
+        <p style="display: inline; font-size: 30px; font-weight: bold; text-align: center; margin: 10px;" id="title"></p>
+        <div style="justify-self: center; align-self: center;"><a
+                style="border-width: 1px; color: black; border-color: black; border-style: solid; padding: 8px; border-radius: 5px; text-decoration: none;"
+                id="logout" href="javascript:logout()">退出登录</a></div>
+    </header>
+    <main style="top: 70px; position: relative; padding: 0;">
+        <table style="width: 100%;">
+            <tr style="background-color: white;">
+                <td>
+                    <div id="username" style="text-align: center; font-size: 30px; font-weight: bold;"></div>
+                </td>
+                <td>
+                    <div style="display: flex; flex-direction: column;">
+                        <div style="font-size: 20px;">任务进度<span id="finished"></span>/<span id="total"></span></div>
+                        <progress style="margin: 0;"></progress>
+                    </div>
+                </td>
+            </tr>
+            <tr style="background-color: white;">
+                <td>
+                    <div style="text-align: center;">
+                        <p style="font-size: 30px; font-weight: bold;">发布情况</p>
+                        <p id="status" style="font-size: 25px;"></p>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; column-gap: 10px;">
+                            <button id="download-html">下载HTML版</button>
+                            <button id="download-pdf">下载PDF版</button>
+                        </div>
+                    </div>
+                </td>
+                <td style="width: 73.4%;">
+                    <div>
+                        <p style="font-size: 30px; font-weight: bold;">任务列表</p>
+                        <div style="overflow-y: scroll; height: 270px;">
+                            <details>
+                                <summary>已完成(<span id="finished2"></span>)</summary>
+                                <ul id="finished-tasks"></ul>
+                            </details>
+                            <details open>
+                                <summary>待完成(<span id="need-finish"></span>)</summary>
+                                <ul id="need-finish-tasks"></ul>
+                            </details>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+        </table>
+    </main>
+</body>
 <script>
-    function logout(){
+    function logout() {
         $.post(
             '/api/logout',
             {
-                'AlbumID': location.href.split('/').reverse()[0]
+                'AlbumID': location.href.split('/').reverse()[1]
             },
             (data, ts, jqxhr) => {
                 location.reload()
             }
         )
     }
+    $.post(
+        'dashdata',
+        (data, ts, jqxhr) => {
+            $('#title').text(data["title"])
+            $('#username').text(data["login-name"])
+            $('#finished').text(data["task"]["finished"].length)
+            $("#total").text(data["task"]["finished"].length + data["task"]["not-finished"].length)
+            $('progress').val(data["task"]["finished"].length/(data["task"]["finished"].length + data["task"]["not-finished"].length))
+            switch (data['released']) {
+                case "not-yet":
+                    $('#status').text('未发布').css('color', 'grey')
+                    $('#download-html').attr('disabled', 'disabled')
+                    $('#download-pdf').attr('disabled', 'disabled')
+                    break;
+                case "early":
+                    $('#status').text('初步发布').css('color', 'orange')
+                    break
+                case "released":
+                    $('#status').text('已发布').css('color', 'green')
+                    break;
+            }
+            $('#finished2').text(data["task"]["finished"].length)
+            $('#need-finish').text(data["task"]["not-finished"].length)
+            data['task']['finished'].forEach(element => {
+                $(`<li><span class="${element['required']?'must':'not-need'}">${element['required']?'必':'选'}</span><span>${element['name']}</span><a class='button' href='task/${element['id']}' style="text-align: center;">&gt;进入修改</a>${element['required']?'':'<button task-id="'+element['id']+'" disabled="disabled">标记完成</button>'}</li>`).appendTo($('#finished-tasks'))
+            });
+            data['task']['not-finished'].forEach(element => {
+                $(`<li><span class="${element['required']?'must':'not-need'}">${element['required']?'必':'选'}</span><span>${element['name']}</span><a class='button' href='task/${element['id']}' style="text-align: center;">&gt;进入填写</a>${element['required']?'':'<button onclick="mark_finished('+element['id']+')">标记完成</button>'}</li>`).appendTo($('#need-finish-tasks'))
+            });
+        }
+    )
 </script>
+
+</html>

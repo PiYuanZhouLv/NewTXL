@@ -7,62 +7,121 @@
                 color:red !important;
                 border-color: red !important;
             }
-            article{
+            /* article{
                 border-width: 1px;
                 border-color: black;
                 border-radius: 5px;
                 border-style: solid;
-            }
+            } */
         </style>
+        <link rel="stylesheet" href="https://cdn.simplecss.org/simple.min.css"> 
+        <script src="/jquery-3.7.1.min.js"></script>
+        <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
     </head>
-    <body>
-        <header style="display: grid; grid-template-columns: 1fr 5fr 1fr; box-shadow: 0px 5px 5px #888888; position: absolute;left: 0;top: 0;width: 100%;">
-            <div style="justify-self: center; align-self: center;"><a style="border-width: 1px; color: black; border-color: black; border-style: solid; padding: 8px; border-radius: 5px; text-decoration: none;" href="homepage.html">&lt;返回首页</a></div>
-            <p style="display: inline; font-size: 30px; font-weight: bold; text-align: center; margin: 10px;" id="title">同学录标题</p>
-            <div style="justify-self: center; align-self: center;"><a style="border-width: 1px; color: black; border-color: black; border-style: solid; padding: 8px; border-radius: 5px; text-decoration: none;" id="logout" href="">退出登录</a></div>
+    <body style="display: unset;">
+        <header style="display: grid; grid-template-columns: 1fr 5fr 1fr; box-shadow: 0px 5px 5px #888888; position: absolute;left: 0;top: 0;width: 100%; justify-items: center; padding: 0; --accent-bg: white">
+            <div style="justify-self: center; align-self: center;"><a style="border-width: 1px; color: black; border-color: black; border-style: solid; padding: 8px; border-radius: 5px; text-decoration: none;" href="/">&lt;返回首页</a></div>
+            <p style="display: inline; font-size: 30px; font-weight: bold; text-align: center; margin: 10px;" id="title"></p>
+            <div style="justify-self: center; align-self: center;"><a style="border-width: 1px; color: black; border-color: black; border-style: solid; padding: 8px; border-radius: 5px; text-decoration: none;" id="logout" href="javascript:logout()">退出登录</a></div>
         </header>
-        <main style="display: grid; grid-template-columns: 1fr 1fr 1fr; top: 100px; position: relative;justify-content: space-evenly;justify-items: center;">
+        <main style="display: grid; grid-template-columns: 1fr 1fr 1fr; top: 100px; position: relative; justify-items: center;">
             <article>
                 <canvas id="login" width="300" height="300"></canvas>
                 <div style="display: flex; width: 300px;">
                     <span style="white-space: nowrap;">未登录:</span>
-                    <marquee id="not-login">张小三、李大四、王老五、刘第七、奥老八</marquee>
-                    <span style="color: blue; white-space: nowrap;" onclick="">全部</span>
+                    <marquee id="not-login"></marquee>
+                    <span style="color: blue; white-space: nowrap;" onclick="swal('未登录', $('#not-login').text())">全部</span>
                 </div>
             </article>
-            <article><canvas id="finished" width="300" height="300"></canvas></article>
+            <article>
+                <canvas id="finished" width="300" height="300"></canvas>
+                <div style="display: flex; width: 300px;">
+                    <span style="white-space: nowrap;">未完成:</span>
+                    <marquee id="not-finish"></marquee>
+                    <span style="color: blue; white-space: nowrap;" onclick="swal('未完成', $('#not-finish').text())">全部</span>
+                </div>
+            </article>
             <article style="display: flex; flex-direction: column; justify-content: space-evenly; text-align: center; width: 300px;">
                 <h3>操作区</h3>
                 <button>设置</button>
                 <button>发布</button>
-                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr;"><button>暂停收集</button><button>正在收集</button><button>已发布</button></div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; font-size: 0.95em;"><button>暂停收集</button><button>正在收集</button><button>已发布</button></div>
             </article>
         </main>
     </body>
     <script>
-        loginCtx = document.getElementById("login").getContext('2d')
-        loginCtx.beginPath()
-        loginCtx.strokeStyle = '#c0c0c0'
-        loginCtx.lineCap = 'round'
-        loginCtx.lineWidth = 10
-        loginCtx.arc(150, 150, 120, 2 * Math.PI / 3, Math.PI / 3)
-        loginCtx.stroke()
+        function drawLogin(percent){
+            loginCtx = document.getElementById("login").getContext('2d')
+            loginCtx.beginPath()
+            loginCtx.strokeStyle = '#c0c0c0'
+            loginCtx.lineCap = 'round'
+            loginCtx.lineWidth = 10
+            loginCtx.arc(150, 150, 120, 2 * Math.PI / 3, Math.PI / 3)
+            loginCtx.stroke()
 
-        loginCtx.beginPath()
-        loginCtx.strokeStyle = 'green'
-        loginCtx.lineCap = 'round'
-        loginCtx.lineWidth = 10
-        loginCtx.arc(150, 150, 120, 2 * Math.PI / 3, (2 / 3 + 5 / 3 * 0.8) % 2 * Math.PI)
-        loginCtx.stroke()
+            loginCtx.beginPath()
+            loginCtx.strokeStyle = 'green'
+            loginCtx.lineCap = 'round'
+            loginCtx.lineWidth = 10
+            loginCtx.arc(150, 150, 120, 2 * Math.PI / 3, (2 / 3 + 5 / 3 * percent) % 2 * Math.PI)
+            loginCtx.stroke()
 
-        loginCtx.font = "20px sans-serif"
-        loginCtx.textAlign = "center"
-        loginCtx.textBaseline = "middle"
-        loginCtx.fillText('80%', 150, 262)
+            loginCtx.font = "20px sans-serif"
+            loginCtx.textAlign = "center"
+            loginCtx.textBaseline = "middle"
+            loginCtx.fillText((percent*100).toFixed(1)+'%', 150, 262)
 
-        loginCtx.font = "50px sans-serif"
-        loginCtx.textAlign = "center"
-        loginCtx.textBaseline = "middle"
-        loginCtx.fillText('已登录', 150, 150)
+            loginCtx.font = "50px sans-serif"
+            loginCtx.textAlign = "center"
+            loginCtx.textBaseline = "middle"
+            loginCtx.fillText('已登录', 150, 150)
+        }
+        function drawFinish(percent){
+            loginCtx = document.getElementById("finished").getContext('2d')
+            loginCtx.beginPath()
+            loginCtx.strokeStyle = '#c0c0c0'
+            loginCtx.lineCap = 'round'
+            loginCtx.lineWidth = 10
+            loginCtx.arc(150, 150, 120, 2 * Math.PI / 3, Math.PI / 3)
+            loginCtx.stroke()
+
+            loginCtx.beginPath()
+            loginCtx.strokeStyle = 'green'
+            loginCtx.lineCap = 'round'
+            loginCtx.lineWidth = 10
+            loginCtx.arc(150, 150, 120, 2 * Math.PI / 3, (2 / 3 + 5 / 3 * percent) % 2 * Math.PI)
+            loginCtx.stroke()
+
+            loginCtx.font = "20px sans-serif"
+            loginCtx.textAlign = "center"
+            loginCtx.textBaseline = "middle"
+            loginCtx.fillText((percent*100).toFixed(1)+'%', 150, 262)
+
+            loginCtx.font = "50px sans-serif"
+            loginCtx.textAlign = "center"
+            loginCtx.textBaseline = "middle"
+            loginCtx.fillText('已完成', 150, 150)
+        }
+        $.post(
+            'dashdata',
+            (data, ts, jqxhr) => {
+                $("#title").text(data['title'])
+                drawLogin(data['logined']['percent'])
+                $("#not-login").text(data['logined']['not-list'].join('、'))
+                drawFinish(data['finished']['percent'])
+                $('#not-finish').text(data['finished']['not-list'].join('、'))
+            }
+        )
+        function logout(){
+            $.post(
+                '/api/logout',
+                {
+                    'AlbumID': location.href.split('/').reverse()[1]
+                },
+                (data, ts, jqxhr) => {
+                    location.reload()
+                }
+            )
+        }
     </script>
 </html>
