@@ -1,0 +1,50 @@
+{
+    "info": {
+        "newid": 1,
+        "savetime": "2024-02-10 21:02:24",
+        "ivcode": [
+            "test ivcode",
+            "fd2132035329f8f7",
+            "a4d5f1d078d6197c",
+            "3110093ac55882f5",
+            "c1b8e64e05b9ce2f",
+            "7e64947c54b49437",
+            "d879ba099319428d",
+            "723aae5ba1663c67",
+            "bd187cfb48a1579f",
+            "0cacf1822e378ac3",
+            "c1e968a6cd6fbce8"
+        ]
+    },
+    "shelf": {
+        "0": {
+            "title": "圆周率研究小组的同学录",
+            "user": {
+                "PiYuanZhouLv": {
+                    "password": "91f1d5329980ce27661fb2ed3f5a20b0",
+                    "type": "hash",
+                    "finished": false,
+                    "group": 0
+                },
+                "Test111": {
+                    "password": "123456",
+                    "type": "initial",
+                    "group": 0
+                }
+            },
+            "group": {
+                "0": "开发者"
+            },
+            "admin": "c4d038b4bed09fdb1471ef51ec3a32cd",
+            "status": "receiving",
+            "pages": {
+                "rank": [],
+                "pages": {}
+            },
+            "storage": {
+                "material": {},
+                "extension": {}
+            }
+        }
+    }
+}

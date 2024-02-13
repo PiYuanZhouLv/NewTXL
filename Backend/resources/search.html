@@ -3,61 +3,48 @@
     <head>
         <title>同学录 - 搜索同学录</title>
         <link rel="stylesheet" href="https://cdn.simplecss.org/simple.min.css">
+        <script src="/jquery-3.7.1.min.js"></script>
         <!-- <meta http-equiv="refresh" content="1"> -->
     </head>
     <body>
         <header style="position: fixed; width: 100%; z-index: 2;">
             <div style="display: grid; grid-template-columns: 1fr 5fr 1fr;">
-            <div style="justify-self: center; align-self: center;"><a style="border-width: 1px; color: black; border-color: black; border-style: solid; padding: 8px; border-radius: 5px; text-decoration: none;" href="homepage.html">&lt;返回首页</a></div>
+            <div style="justify-self: center; align-self: center;"><a style="border-width: 1px; color: black; border-color: black; border-style: solid; padding: 8px; border-radius: 5px; text-decoration: none;" href="/">&lt;返回首页</a></div>
             <p style="display: inline; font-size: 30px; font-weight: bold;">搜索同学录</p>
             <div></div>
             </div>
             <div style="display: grid; grid-template-columns: 5fr 1fr;">
-                <input placeholder="请输入同学录标题">
-                <button>搜索</button>
+                <input id="keyword" placeholder="请输入同学录标题">
+                <button onclick="search()">搜索</button>
             </div>
         </header>
         <main style="top: 159.67px; position: relative;">
-            <section style="display: grid; grid-template-columns: 5fr 1fr;">
+            <!-- <section style="display: grid; grid-template-columns: 5fr 1fr;">
                 <span>同学录的名字</span>
                 <a class="button" style="text-align: center;">进入&gt;</a>
-            </section>
-            <section style="display: grid; grid-template-columns: 5fr 1fr;">
-                <span>同学录的名字</span>
-                <a class="button" style="text-align: center;">进入&gt;</a>
-            </section>
-            <section style="display: grid; grid-template-columns: 5fr 1fr;">
-                <span>同学录的名字</span>
-                <a class="button" style="text-align: center;">进入&gt;</a>
-            </section>
-            <section style="display: grid; grid-template-columns: 5fr 1fr;">
-                <span>同学录的名字</span>
-                <a class="button" style="text-align: center;">进入&gt;</a>
-            </section>
-            <section style="display: grid; grid-template-columns: 5fr 1fr;">
-                <span>同学录的名字</span>
-                <a class="button" style="text-align: center;">进入&gt;</a>
-            </section>
-            <section style="display: grid; grid-template-columns: 5fr 1fr;">
-                <span>同学录的名字</span>
-                <a class="button" style="text-align: center;">进入&gt;</a>
-            </section>
-            <section style="display: grid; grid-template-columns: 5fr 1fr;">
-                <span>同学录的名字</span>
-                <a class="button" style="text-align: center;">进入&gt;</a>
-            </section>
-            <section style="display: grid; grid-template-columns: 5fr 1fr;">
-                <span>同学录的名字</span>
-                <a class="button" style="text-align: center;">进入&gt;</a>
-            </section>
-            <section style="display: grid; grid-template-columns: 5fr 1fr;">
-                <span>同学录的名字</span>
-                <a class="button" style="text-align: center;">进入&gt;</a>
-            </section>
-            <section style="display: grid; grid-template-columns: 5fr 1fr;">
-                <span>同学录的名字</span>
-                <a class="button" style="text-align: center;">进入&gt;</a>
-            </section>
+            </section> -->
         </main>
+        <script>
+            function search(){
+                $("main").html("")
+                $.post(
+                    '/api/search',
+                    {
+                        'keyword': $("#keyword").val()
+                    },
+                    (data, ts, jqxhr) => {
+                        data.forEach(element => {
+                            $("main").append(
+                                $(`<section style="display: grid; grid-template-columns: 4fr 1fr 1fr; align-items: baseline;">
+                                       <span>${element[0]}</span>
+                                       <span style="color: ${ {"正在收集": "limegreen", "暂停收集": "red", "已发布": "orange"}[element[2]] }; text-align: center">${element[2]}</span>
+                                       <a class="button" style="text-align: center;" href="/album/${element[1]}">进入&gt;</a>
+                                   </section>`)
+                            )
+                        });
+                    }
+                )
+            }
+        </script>
     </body>
 </html>

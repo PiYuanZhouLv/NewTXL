@@ -7,6 +7,7 @@ import threading
 from rapidfuzz import process
 import os
 import traceback
+import secrets
 
 class DataShelf:
     def __init__(self, file, addr, log=False) -> None:
@@ -33,7 +34,8 @@ class DataShelf:
             self.shelf = {
                 'info':{
                     'newid': 0,
-                    'savetime': time.strftime('%Y-%m-%d %H:%M:%S')
+                    'savetime': time.strftime('%Y-%m-%d %H:%M:%S'),
+                    'ivcode': []
                 },
                 'shelf':{}
             }
@@ -54,7 +56,20 @@ class DataShelf:
     def new(self):
         nid = self.shelf['info']['newid']
         self.shelf['info']['newid'] += 1
-        self.shelf['shelf'][str(nid)] = {}
+        self.shelf['shelf'][str(nid)] = {
+            "title": "",
+            "user": {},
+            "admin": "",
+            "status": "paused",
+            "pages": {
+                "rank": [],
+                "pages": {}
+            },
+            "storage":{
+                "material": {},
+                "extension": {}
+            }
+        }
         self.save()
         return str(nid)
     # def delete(self, tid):
@@ -74,6 +89,13 @@ class DataShelf:
     def search(self, command):
         titles = {k: v['title'] for k, v in self.shelf['shelf'].items() if 'title' in v}
         return json.dumps(process.extract(command[0], titles, limit=10))
+    def check(self, command):
+        if command[0] in self.shelf['info']['ivcode']:
+            self.shelf['info']['ivcode'].remove(command[0])
+            self.save()
+            return "Valid"
+        else:
+            return "Invalid"
     def accept(self):
         def deal(sock: socket.socket, server: DataShelf):
             q = queue.Queue()
@@ -85,6 +107,8 @@ class DataShelf:
                     cmd = json.loads(lvtcp.recv(1024).decode())
                 except socket.timeout:
                     continue
+                except ConnectionResetError:
+                    cmd = ["close"]
                 except json.JSONDecodeError:
                     try:
                         lvtcp.send(b'CommandSyntexError')
@@ -130,6 +154,8 @@ class DataShelf:
                         r = self.search(cmd[1:])
                     case "new":
                         r = self.new()
+                    case "check":
+                        r = self.check(cmd[1:])
             except Exception as err:
                 r = type(err).__name__+': '+str(err)
                 traceback.print_exception(err)
@@ -161,13 +187,29 @@ def start(file, addr):
                 case "log off":
                     log = False
                     print('OK, the log is off now')
-                case "shutdown":
+                case "shutdown"|"exit"|"quit":
                     db.do_shutdown()
                     print('Shuting down, please do NOT close this window.')
                     print('This can take about 10 seconds......')
                     acc.join()
                     pro.join()
                     break
+                case "register ivcode":
+                    while True:
+                        ivcode = input('ivcode>')
+                        if ivcode.startswith('#random'):
+                            if '*' in ivcode:
+                                times = int(ivcode.split('*')[-1])
+                            else:
+                                times = 1
+                            for i in range(times):
+                                rc = secrets.token_hex(8)
+                                print(f'{i+1}: {rc}')
+                                db.shelf['info']['ivcode'].append(rc)
+                        elif ivcode:
+                            db.shelf['info']['ivcode'].append(ivcode)
+                        else:
+                            break
                 case _:
                     print('Unknown command.')
             db.log = log
